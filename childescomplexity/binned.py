@@ -3,11 +3,10 @@ from itertools import groupby
 from typing import List, Dict
 
 from childescomplexity import configs
-from childescomplexity.util import split
 
 
 def make_age_bin2data(corpus_name: str,
-                      age_step: int,
+                      age_step: int = configs.Binning.age_step,
                       verbose: bool = False,
                       ) -> Dict[float, List[str]]:
 
@@ -36,19 +35,13 @@ def make_age_bin2data(corpus_name: str,
 
 
 def make_age_bin2data_with_min_size(age_bin2data: Dict[float, List[str]],
-                                    min_num_data: int,
-                                    no_binning: bool = False,
+                                    min_num_data: int = configs.Binning.num_tokens_in_bin,
+                                    verbose: bool = False,
                                     ):
     """
     return dictionary similar to age_bin2tokens but with a constant number of data per age_bin.
     combine bins when a bin is too small.
     """
-
-    if no_binning:
-        print('WARNING: Not binning by age')
-        all_tokens = np.concatenate(list(age_bin2data.values()))
-        return {n: list(tokens) for n, tokens in enumerate(split(all_tokens, split_size=min_num_data))
-                if len(tokens) == min_num_data}
 
     res = {}
     buffer = []
@@ -61,5 +54,10 @@ def make_age_bin2data_with_min_size(age_bin2data: Dict[float, List[str]],
             buffer = []
         else:
             continue
+
+    # printout
+    if verbose:
+        for age_bin, tokens in res.items():
+            print(f'age start (days)={age_bin:>12} num tokens in bin={len(tokens):,}')
 
     return res

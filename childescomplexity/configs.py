@@ -9,7 +9,11 @@ class Dirs:
 
 
 class Fig:
-    ax_fontsize = 20
+    ax_fontsize = 18
     leg_fontsize = 12
-    dpi = 163
-    fig_size = (6, 6)
+    dpi = 200
+
+
+class Binning:
+    age_step = 100
+    num_tokens_in_bin = 100_000  # 100K is good with AGE_STEP=100

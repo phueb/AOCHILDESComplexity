@@ -1,5 +1,5 @@
 
-from childescomplexity.util import to_corr_mat
+from childescomplexity.utils import to_corr_mat
 
 
 # todo collect all measures in a single for loop here and output table
