@@ -1,49 +1,43 @@
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FormatStrFormatter
 
 import numpy as np
-from childescomplexity.utils import load_tokens
+from childescomplexity.binned import make_age_bin2data, make_age_bin2data_with_min_size
 from childescomplexity import configs
-from childescomplexity.measures import calc_utterance_lengths
+from childescomplexity.utils import plot_best_fit_line
 
 # /////////////////////////////////////////////////////////////////
 
 CORPUS_NAME = 'childes-20201026'
 WINDOW_SIZE = 10_000
 
-tokens = load_tokens(CORPUS_NAME)
+# make equal-sized partitions corresponding to approximately equal sized age bins
+age_bin2tokens_ = make_age_bin2data(CORPUS_NAME)
+age_bin2tokens = make_age_bin2data_with_min_size(age_bin2tokens_)
+num_bins = len(age_bin2tokens)
 
-WSPACE = 0.0
-HSPACE = 0.0
-WPAD = 0.0
-HPAD = 0.0
-PAD = 0.2
-LW = 0.5
+y = []
+for _, tokens in age_bin2tokens.items():
 
-ys = [calc_utterance_lengths(tokens, rolling_avg=True, window_size=WINDOW_SIZE),
-      calc_utterance_lengths(tokens, rolling_std=True, window_size=WINDOW_SIZE)]
+    last_period = 0
+    sent_lengths = []
+    for n, item in enumerate(tokens):
+        if item in {'.', '!', '?'}:
+            sent_length = n - last_period - 1
+            sent_lengths.append(sent_length)
+            last_period = n
 
+    y.append(sum(sent_lengths) / len(sent_lengths))
 
 # fig
-y_labels = ['Mean\nUtt. Length', 'Std.\nUtt.Length']
-fig, axs = plt.subplots(2, 1, dpi=configs.Fig.dpi, figsize=(6, 4))
-for ax, y_label, y in zip(axs, y_labels, ys):
-    if ax == axs[-1]:
-        ax.set_xlabel('Corpus Location [# words]', fontsize=configs.Fig.ax_fontsize)
-        x = np.arange(len(y)) + 1
-        # ax.set_xticks(x)
-    else:
-        ax.set_xticks([])
-        ax.set_xticklabels([])
-    ax.yaxis.set_major_formatter(FormatStrFormatter('%.1f'))
-    ax.set_ylabel(y_label, fontsize=configs.Fig.ax_fontsize)
-    ax.spines['right'].set_visible(False)
-    ax.spines['top'].set_visible(False)
-    ax.tick_params(axis='both', which='both', top=False, right=False)
-    plt.setp(ax.get_yticklabels(), fontsize=configs.Fig.leg_fontsize)
-    # plot
-    ax.plot(y, linewidth=LW, label=y_label, c='C0')
-# show
-plt.subplots_adjust(wspace=WSPACE, hspace=HSPACE)
-plt.tight_layout(h_pad=HPAD, w_pad=WPAD, pad=PAD)
+_, ax = plt.subplots(figsize=(6, 4), dpi=configs.Fig.dpi)
+ax.set_ylabel('Mean\nUtterance Length', fontsize=configs.Fig.ax_fontsize)
+ax.set_xlabel('Corpus Partition', fontsize=configs.Fig.ax_fontsize)
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
+ax.tick_params(axis='both', which='both', top=False, right=False)
+# plot
+x = np.arange(num_bins) + 1
+ax.plot(x, y, '-')
+plot_best_fit_line(ax, x, y, x_pos=0.70, y_pos=0.1)
 plt.show()
+

@@ -49,7 +49,7 @@ for age_bin, tokens in age_bin2tokens.items():
 
 # fig
 _, ax = plt.subplots(figsize=(6, 4), dpi=configs.Fig.dpi)
-ax.set_ylabel('Number of\nunique noun chunks', fontsize=configs.Fig.ax_fontsize)
+ax.set_ylabel('Number of\nnoun chunk types', fontsize=configs.Fig.ax_fontsize)
 ax.set_xlabel('Corpus Partition', fontsize=configs.Fig.ax_fontsize)
 ax.spines['right'].set_visible(False)
 ax.spines['top'].set_visible(False)

@@ -1,71 +1,8 @@
 import numpy as np
-import pandas as pd
 from collections import Counter
-from scipy.sparse import coo_matrix
-
-from typing import List, Set, Tuple
 
 
-def calc_selectivity(tw_mat_chance: coo_matrix,
-                     tw_mat_observed: coo_matrix,
-                     xws_chance: List[str],
-                     xws_observed: List[str],
-                     words: Set[str]
-                     ) -> Tuple[float, float, float]:
-    # cttr_chance
-    col_ids = [n for n, xw in enumerate(xws_chance) if xw in words]
-    cols = tw_mat_chance.tocsc()[:, col_ids].toarray()
-    context_distribution = np.sum(cols, axis=1, keepdims=False)
-    num_context_types = np.count_nonzero(context_distribution)
-    num_context_tokens = np.sum(context_distribution)
-    cttr_chance = num_context_types / num_context_tokens
-
-    # cttr_observed
-    col_ids = [n for n, xw in enumerate(xws_observed) if xw in words]
-    cols = tw_mat_observed.tocsc()[:, col_ids].toarray()
-    context_distribution = np.sum(cols, axis=1, keepdims=False)
-    num_context_types = np.count_nonzero(context_distribution)
-    num_context_tokens = np.sum(context_distribution)
-    cttr_observed = num_context_types / num_context_tokens
-
-    print(f'cttr_chance={cttr_chance:>6.2f} cttr_observed={cttr_observed:>6.2f}')
-
-    # compute ratio such that the higher the better (the more selective)
-    sel = cttr_chance / cttr_observed
-    return cttr_chance, cttr_observed, sel
-
-
-def calc_utterance_lengths(tokens: List[str],
-                           rolling_avg: bool = False,
-                           rolling_std: bool = False,
-                           window_size: int = 1000,
-                           ) -> np.ndarray:
-
-    assert not(rolling_avg and rolling_std)
-
-    # make sent_lengths
-    last_period = 0
-    sent_lengths = []
-    for n, item in enumerate(tokens):
-        if item in ['.', '!', '?']:
-            sent_length = n - last_period - 1
-            sent_lengths.append(sent_length)
-            last_period = n
-
-    # rolling window
-    if rolling_avg:
-        df = pd.Series(sent_lengths)
-        print('Making sentence length rolling average...')
-        return df.rolling(window_size).std().values
-    elif rolling_std:
-        df = pd.Series(sent_lengths)
-        print('Making sentence length rolling std...')
-        return df.rolling(window_size).mean().values
-    else:
-        return np.array(sent_lengths)
-
-
-def calc_entropy(words):
+def calc_entropy(words):  # this does not show a strong age-related trend compared to MTLD
     num_labels = len(words)
     probabilities = np.asarray([count / num_labels for count in Counter(words).values()])
     result = - probabilities.dot(np.log2(probabilities))

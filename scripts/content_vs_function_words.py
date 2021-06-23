@@ -1,33 +1,36 @@
-import matplotlib.pyplot as plt
+"""
+Research questions:
+1. does input to younger children have a larger content vs. function word ratio?
+"""
 import numpy as np
+import matplotlib.pyplot as plt
+
 
 from childescomplexity.binned import make_age_bin2data, make_age_bin2data_with_min_size
 from childescomplexity import configs
 from childescomplexity.utils import plot_best_fit_line
-from childescomplexity.measures import mtld
-
+from childescomplexity.words import function_words
 
 CORPUS_NAME = 'childes-20201026'
-NUM_PARTS = 16
+VERBOSE = False
 
 # make equal-sized partitions corresponding to approximately equal sized age bins
 age_bin2tokens_ = make_age_bin2data(CORPUS_NAME)
 age_bin2tokens = make_age_bin2data_with_min_size(age_bin2tokens_)
 num_bins = len(age_bin2tokens)
 
-WSPACE = 0.0
-HSPACE = 0.0
-WPAD = 0.0
-HPAD = 0.0
-PAD = 0.2
-
 y = []
-for part in age_bin2tokens.values():
-    y.append(mtld(part))
+for _, tokens in age_bin2tokens.items():
+
+    num_function_words_in_part = len([w for w in tokens if w in function_words])
+
+    yi = num_function_words_in_part / len(tokens)
+    y.append(yi)
+
 
 # fig
 _, ax = plt.subplots(figsize=(6, 4), dpi=configs.Fig.dpi)
-ax.set_ylabel('Measure of\nLexical Textual Diversity', fontsize=configs.Fig.ax_fontsize)
+ax.set_ylabel('Proportion function words', fontsize=configs.Fig.ax_fontsize)
 ax.set_xlabel('Partition', fontsize=configs.Fig.ax_fontsize)
 ax.spines['right'].set_visible(False)
 ax.spines['top'].set_visible(False)
