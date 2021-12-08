@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 
 import numpy as np
-from childescomplexity.binned import make_age_bin2data, make_age_bin2data_with_min_size
-from childescomplexity import configs
-from childescomplexity.utils import plot_best_fit_line
+from aochildescomplexity.binned import make_age_bin2data, make_age_bin2data_with_min_size
+from aochildescomplexity import configs
+from aochildescomplexity.utils import plot_best_fit_line
 
 # /////////////////////////////////////////////////////////////////
 
@@ -41,3 +41,6 @@ ax.plot(x, y, '-')
 plot_best_fit_line(ax, x, y, x_pos=0.70, y_pos=0.1)
 plt.show()
 
+
+for n, yi in enumerate(y):
+    print(n, yi)

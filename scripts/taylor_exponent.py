@@ -8,10 +8,10 @@ from collections import Counter
 from scipy import optimize
 import matplotlib.pyplot as plt
 
-from childescomplexity.utils import load_tokens
-from childescomplexity.binned import make_age_bin2data, make_age_bin2data_with_min_size
-from childescomplexity import configs
-from childescomplexity.utils import plot_best_fit_line
+from aochildescomplexity.utils import load_tokens
+from aochildescomplexity.binned import make_age_bin2data, make_age_bin2data_with_min_size
+from aochildescomplexity import configs
+from aochildescomplexity.utils import plot_best_fit_line
 
 CORPUS_NAME = 'childes-20201026'
 SPLIT_SIZE = 5620
@@ -97,5 +97,7 @@ plot_best_fit_line(ax, x, taylor_exponents, x_pos=0.70, y_pos=0.1)
 plt.show()
 
 
+for n, yi in enumerate(y):
+    print(n, yi)
 
 

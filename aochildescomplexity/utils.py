@@ -5,7 +5,7 @@ from functools import reduce
 from operator import iconcat
 from scipy.stats import linregress
 
-from childescomplexity import configs
+from aochildescomplexity import configs
 
 
 def load_tokens(corpus_name: str,

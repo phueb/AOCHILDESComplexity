@@ -2,7 +2,7 @@ import numpy as np
 from itertools import groupby
 from typing import List, Dict
 
-from childescomplexity import configs
+from aochildescomplexity import configs
 
 
 def make_age_bin2data(corpus_name: str,
