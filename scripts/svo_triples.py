@@ -66,4 +66,4 @@ plot_best_fit_line(ax, x, y, x_pos=0.70, y_pos=0.1)
 plt.show()
 
 for n, yi in enumerate(y):
-    print(n, yi)
+    print(n + 1, yi)

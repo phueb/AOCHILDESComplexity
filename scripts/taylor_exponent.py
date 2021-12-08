@@ -98,6 +98,6 @@ plt.show()
 
 
 for n, yi in enumerate(y):
-    print(n, yi)
+    print(n + 1, yi)
 
 
