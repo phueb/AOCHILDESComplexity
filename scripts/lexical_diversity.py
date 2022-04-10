@@ -7,11 +7,11 @@ from aochildescomplexity.utils import plot_best_fit_line
 from aochildescomplexity.measures import mtld
 
 
-CORPUS_NAME = 'childes-20201026'
+
 NUM_PARTS = 16
 
 # make equal-sized partitions corresponding to approximately equal sized age bins
-age_bin2tokens_ = make_age_bin2data(CORPUS_NAME)
+age_bin2tokens_ = make_age_bin2data()
 age_bin2tokens = make_age_bin2data_with_min_size(age_bin2tokens_)
 num_bins = len(age_bin2tokens)
 

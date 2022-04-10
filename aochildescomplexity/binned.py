@@ -2,34 +2,32 @@ import numpy as np
 from itertools import groupby
 from typing import List, Dict
 
+from aochildes.pipeline import Pipeline
+
 from aochildescomplexity import configs
 
 
-def make_age_bin2data(corpus_name: str,
-                      age_step: int = configs.Binning.age_step,
+def make_age_bin2data(age_step: int = configs.Binning.age_step,
                       verbose: bool = False,
                       ) -> Dict[float, List[str]]:
 
-    ages_path = configs.Dirs.corpora / f'{corpus_name}_ages.txt'
-    ages_text = ages_path.read_text(encoding='utf-8')
-    ages = np.array(ages_text.split(), dtype=np.float)
-    data_path = configs.Dirs.corpora / f'{corpus_name}.txt'
-    data_text = data_path.read_text(encoding='utf-8')
-    data_by_doc = [doc.split() for doc in data_text.split('\n')[:-1]]
-    ages_binned = ages - np.mod(ages, age_step)
+    # load transcripts from AO-CHILDES corpus
+    pipeline = Pipeline()
+    transcripts = pipeline.load_age_ordered_transcripts()
 
     # convert ages to age bins
+    ages = np.array([t.age for t in transcripts])
+    ages_binned = ages - np.mod(ages, age_step)
     ages_binned = ages_binned.astype(np.int)
-    age_and_docs = zip(ages_binned, data_by_doc)
 
     res = {}
-    for age_bin, doc_group in groupby(age_and_docs, lambda d: d[0]):
-        docs = [d[1] for d in doc_group]
-        data = list(np.concatenate(docs))
+    ages_and_transcripts = zip(ages_binned, transcripts)
+    for age_bin, transcript_group in groupby(ages_and_transcripts, lambda d: d[0]):
+        ts = [d[1] for d in transcript_group]
         if verbose:
-            print(f'Found {len(docs)} transcripts for age-bin={age_bin}')
+            print(f'Found {len(ts)} transcripts for age-bin={age_bin}')
 
-        res[age_bin] = data
+        res[age_bin] = [w for t in ts for w in t.text.split()]  # list of all words in transcript
 
     return res
 
